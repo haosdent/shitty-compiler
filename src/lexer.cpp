@@ -108,6 +108,25 @@ namespace {
     };
 }
 
+static int CurTok;
+static int getNextToken() {
+    return CurTok = gettok();
+}
+
+static std::map<char, int> BinopPrecedence;
+
+static int GetTokPrecedence() {
+    if (!isascii(CurTok)) {
+        return -1;
+    }
+    int TokPrec = BinopPrecedence[CurTok];
+    if (TokPrec <= 0) {
+        return -1;
+    }
+    return TokPrec;
+}
+
+
 
 
 
