@@ -136,6 +136,37 @@ PrototypeAST *ErrorP(const char *Str) {
     return 0;
 }
 
+static ExprAST *ParseExpression();
+
+static ExprAST *ParseIdentifierExpr() {
+    std::string IdName = IdentifierStr;
+    getNextToken();
+
+    if (CurTok != '(') {
+        return new VariableExprAST(IdName);
+    }
+    getNextToken();
+    std::vector<ExprAST*> Args;
+    if (CurTok != ')') {
+        while (1) {
+            ExprAST *Arg = ParseExpression();
+            if (!Arg) {
+                return 0;
+            }
+            Args.push_back(Arg);
+            if (CurTok == ')') {
+                break;
+            } else if (CurTok != ',') {
+                return Error("Expected ')' or ',' in argument list");
+            }
+            getNextToken();
+        }
+    }
+
+    getNextToken();
+    return new CallExprAST(IdName, Args);
+}
+
 
 
 
