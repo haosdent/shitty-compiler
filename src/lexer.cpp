@@ -167,6 +167,49 @@ static ExprAST *ParseIdentifierExpr() {
     return new CallExprAST(IdName, Args);
 }
 
+static ExprAST *ParseNumberExpr() {
+    ExprAST *Result = new NumberExprAST(NumVal);
+    getNextToken();
+    return Result;
+}
+
+static ExprAST *ParseParenExpr() {
+    getNextToken();
+    ExprAST *V = ParseExpression();
+    if (!V) {
+        return 0;
+    }
+
+    if (CurTok != ')') {
+        return Error("Expected ')'");
+    }
+    getNextToken();
+    return V;
+}
+
+static void MainLoop() {
+    while (1) {
+        fprintf(stderr, "ready> ");
+        switch (CurTok) {
+            case tok_eof: return;
+            case ';':  getNextToken(); break;
+            case tok_def: HandleDefinition(); break;
+            case tok_extern: HandleExtern(); break;
+            default: HandleTopLevelExpression(); break;
+        }
+    }
+}
+
+int main() {
+    BinopPrecedence['<'] = 10;
+    BinopPrecedence['+'] = 20;
+    BinopPrecedence['-'] = 20;
+    BinopPrecedence['*'] = 40;
+    fprintf(stderr, "ready> ");
+    getNextToken();
+    MainLoop();
+    return 0;
+}
 
 
 
