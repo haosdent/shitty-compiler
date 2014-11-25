@@ -187,6 +187,30 @@ static ExprAST *ParseParenExpr() {
     return V;
 }
 
+static void HandleDefinition() {
+    if (ParseDefinition()) {
+        fprintf(stderr, "Parsed a function definition.\n");
+    } else {
+        getNextToken();
+    }
+}
+
+static void HandleExtern() {
+    if (ParseExtern()) {
+        fprintf(stderr, "Parsed an extern\n");
+    } else {
+        getNextToken();
+    }
+}
+
+static void HandleTopLevelExpression() {
+    if (ParseTopLevelExpr()) {
+        fprintf(stderr, "Parsed a top-level expr\n");
+    } else {
+        getNextToken();
+    }
+}
+
 static void MainLoop() {
     while (1) {
         fprintf(stderr, "ready> ");
