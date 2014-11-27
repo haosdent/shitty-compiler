@@ -196,7 +196,30 @@ static ExprAST *ParsePrimary() {
     }
 }
 
+static ExprAST *ParseBinOpRHS(int ExprPrec, ExprAST *LHS) {
+    while (1) {
+        int TokPrec = GetTokPrecedence();
+        if (TokPrec < ExprPrec) {
+            return LHS;
+        }
 
+        int BinOp = CurTok;
+        getNextToken();
+        ExprAST *RHS = ParsePrimary();
+        if (!RHS) {
+            return 0;
+        }
+
+        int NextPrec = GetTokPrecedence();
+        if (TokPrec < NextPrec) {
+            RHS = ParseBinOpRHS(TokPrec + 1, RHS);
+            if (RHS == 0) {
+                return 0;
+            }
+        }
+        LHS = new BinaryExprAST(BinOp, LHS, RHS);
+    }
+}
 
 static void HandleDefinition() {
     if (ParseDefinition()) {
