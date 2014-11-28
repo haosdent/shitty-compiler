@@ -221,6 +221,37 @@ static ExprAST *ParseBinOpRHS(int ExprPrec, ExprAST *LHS) {
     }
 }
 
+static ExprAST *ParseExpression() {
+    ExprAST *LHS = ParsePrimary();
+    if (!LHS) {
+        return 0;
+    }
+    return ParseBinOpRHS(0, LHS);
+}
+
+static PrototypeAST *ParsePrototype() {
+    if (CurTok != tok_identifier) {
+        return ErrorP("Expected function name in prototype");
+    }
+    std::string FnName = IdentifierStr;
+    getNextToken();
+
+    if (CurTok != '(') {
+        return ErrorP("Expected '(' in prototype");
+    }
+
+    std::vector<std::string> ArgNames;
+    while (getNextToken() == tok_identifier) {
+        ArgNames.push_back(IdentifierStr);
+    }
+    if (CurTok != ')') {
+        return ErrorP("Expected ')' in prototype");
+    }
+    getNextToken();
+
+    return new PrototypeAST(FnName, ArgNames);
+}
+
 static void HandleDefinition() {
     if (ParseDefinition()) {
         fprintf(stderr, "Parsed a function definition.\n");
