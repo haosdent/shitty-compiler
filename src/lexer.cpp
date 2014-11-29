@@ -252,6 +252,18 @@ static PrototypeAST *ParsePrototype() {
     return new PrototypeAST(FnName, ArgNames);
 }
 
+static FunctionAST *ParseDefinition() {
+    getNextToken();
+    PrototypeAST *Proto = ParsePrototype();
+    if (Proto == 0) {
+        return 0;
+    }
+    if (ExprAST *E = ParseExpression()) {
+        return new FunctionAST(Proto, E);
+    }
+    return 0;
+}
+
 static void HandleDefinition() {
     if (ParseDefinition()) {
         fprintf(stderr, "Parsed a function definition.\n");
