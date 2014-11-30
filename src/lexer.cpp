@@ -264,6 +264,14 @@ static FunctionAST *ParseDefinition() {
     return 0;
 }
 
+static FunctionAST *ParseTopLevelExpr() {
+    if (ExprAST *E = ParseExpression()) {
+        PrototypeAST *Proto = new PrototypeAST("", std::vector<std::string>());
+        return new FunctionAST(Proto, E);
+    }
+    return 0;
+}
+
 static void HandleDefinition() {
     if (ParseDefinition()) {
         fprintf(stderr, "Parsed a function definition.\n");
