@@ -272,6 +272,11 @@ static FunctionAST *ParseTopLevelExpr() {
     return 0;
 }
 
+static PrototypeAST *ParseExtern() {
+    getNextToken();
+    return ParsePrototype();
+}
+
 static void HandleDefinition() {
     if (ParseDefinition()) {
         fprintf(stderr, "Parsed a function definition.\n");
